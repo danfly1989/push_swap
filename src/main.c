@@ -1,137 +1,124 @@
-#include "../libft/libft.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: daflynn <daflynn@student.42berlin.de>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/02 21:45:00 by daflynn           #+#    #+#             */
+/*   Updated: 2025/06/03 17:28:25 by daflynn          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pushswap.h"
 
-char	**split_input(char *input)
+/*Joins all arguments (excluding filename obviously)
+together as a single string so that stack
+can be filled without any type clashes */
+char	*ft_join_args(int argc, char **argv)
 {
-	return (ft_split(input, ' ')); // Split by spaces
-}
-
-static int	is_duplicate(t_list *stack, int num)
-{
-	while (stack)
-	{
-		if (*(int *)stack->content == num)
-			return (1);
-		stack = stack->next;
-	}
-	return (0);
-}
-
-static int	exit_with_error(t_list **stack, int *value)
-{
-	if (value)
-		free(value);
-	ft_putendl_fd("Error", 2);
-	ft_lstclear(stack, free);
-	return (1);
-}
-
-static int	fill_stack(t_list **stack_a, int argc, char **argv)
-{
-	t_list	*new;
-	int		*value;
+	char	*joined;
 	int		i;
+	char	*temp;
 
+	joined = ft_strdup("");
 	i = 1;
 	while (i < argc)
 	{
-		if (!ft_strisdigit(argv[i]))
-			return (exit_with_error(stack_a, NULL));
-		value = malloc(sizeof(int));
-		if (!value)
-			return (exit_with_error(stack_a, NULL));
-		*value = ft_atoi(argv[i]);
-		if (is_duplicate(*stack_a, *value))
-			return (exit_with_error(stack_a, value));
-		new = ft_lstnew(value);
-		if (!new)
-			return (exit_with_error(stack_a, value));
-		ft_lstadd_back(stack_a, new);
+		temp = ft_strjoin(joined, argv[i]);
+		free(joined);
+		joined = ft_strjoin(temp, " ");
+		free(temp);
 		i++;
+	}
+	return (joined);
+}
+
+/*Brute force alg to check for duplicates
+by comparing each number in the stack to every
+node that follows it */
+int	has_duplicates(t_stack *stack)
+{
+	t_stack	*current;
+	t_stack	*next_node;
+
+	current = stack;
+	while (current)
+	{
+		next_node = current->next;
+		while (next_node)
+		{
+			if (current->num == next_node->num)
+				return (1);
+			next_node = next_node->next;
+		}
+		current = current->next;
 	}
 	return (0);
 }
 
-// Function to manually free the array returned by ft_split
-static void	free_split(char **split)
+/*If single argument is given, fills stack with exactly that string
+If multiple arguments given, they will be combined to harmonize
+Fails on empty stack or occurrence of duplicates*/
+int	process_input(int argc, char **argv, t_stack **stack_a)
 {
-	int	i;
+	char	*joined;
 
-	i = 0;
-	while (split[i])
+	if (argc == 2)
+		*stack_a = ft_fill_stack(argv[1]);
+	else
 	{
-		free(split[i]);
-		i++;
+		joined = ft_join_args(argc, argv);
+		*stack_a = ft_fill_stack(joined);
+		free(joined);
 	}
-	free(split);
+	if (!*stack_a || has_duplicates(*stack_a))
+		return (0);
+	return (1);
 }
 
+/*An unsorted list of two only requires sa 100% of the time*/
+void	handle_two_nodes(t_stack **stack_a)
+{
+	if (!ft_is_sorted(*stack_a))
+	{
+		ft_printf("sa\n");
+		sa(stack_a);
+	}
+}
+
+/*
+ *Main flow of program:
+ Exit program if only one argument given (empty line)
+ check input and attempt to process into single string
+ Print Error if either responsible function fails at this point
+ Handle special cases for initial stack of three or less
+ In ALL other cases, run the main push_swap algorithm
+ * */
 int	main(int argc, char **argv)
 {
-	t_list	*stack_a;
-	t_list	*stack_b;
-	char	**args;
-	int		i;
-	int		*value;
-	t_list	*new;
+	t_stack	*stack_a;
+	t_stack	*stack_b;
 
-	stack_a = NULL;
-	stack_b = NULL;
 	if (argc < 2)
 		return (0);
-	// Case when argc == 2 (single string input)
-	if (argc == 2)
+	stack_a = NULL;
+	stack_b = NULL;
+	if (!validate_input(argc, argv) || !process_input(argc, argv, &stack_a))
 	{
-		args = split_input(argv[1]); // Split the single string argument
-		if (!args)
-			return (1);
-		// Now populate the stack using the split arguments
-		i = 0;
-		while (args[i])
-		{
-			if (!ft_strisdigit(args[i]))
-			{
-				free_split(args); // Free the split array if invalid
-				return (1);
-			}
-			// Proceed as if they are separate arguments
-			value = malloc(sizeof(int));
-			if (!value)
-			{
-				free_split(args); // Free the split array if allocation fails
-				return (1);
-			}
-			*value = ft_atoi(args[i]);
-			if (is_duplicate(stack_a, *value))
-			{
-				free_split(args); // Free the split array if duplicate is found
-				return (1);
-			}
-			new = ft_lstnew(value);
-			if (!new)
-			{
-				free_split(args); // Free the split array if list creation fails
-				return (1);
-			}
-			ft_lstadd_back(&stack_a, new);
-			i++;
-		}
-		free_split(args); // Free the split array after usage
+		ft_putstr_fd("Error\n", 2);
+		ft_stack_clear(&stack_a);
+		return (1);
 	}
-	// Standard processing for argc > 2
+	if (ft_is_sorted(stack_a))
+		ft_stack_clear(&stack_a);
+	else if (ft_stack_size(stack_a) == 2)
+		handle_two_nodes(&stack_a);
+	else if (ft_stack_size(stack_a) == 3)
+		sort_three(&stack_a);
 	else
-	{
-		if (fill_stack(&stack_a, argc, argv))
-			return (1);
-	}
-	if (is_sorted(stack_a))
-		return (0);
-	if (argc < 200)
-		comp_sort(&stack_a, &stack_b);
-	else
-		comp_sort(&stack_a, &stack_b);
-	// print_stack(stack_a);
-	ft_lstclear(&stack_a, free);
-	ft_lstclear(&stack_b, free);
+		push_swap(&stack_a, &stack_b);
+	ft_stack_clear(&stack_a);
+	ft_stack_clear(&stack_b);
 	return (0);
 }

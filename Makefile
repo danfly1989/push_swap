@@ -1,10 +1,10 @@
-# Compiler and flags
+#Compiler and flags
 CC     = cc
 CFLAGS = -Wall -Wextra -Werror -g
 
 # Project and source files
 NAME   = push_swap
-SRCS   = src/main.c src/swap.c src/push.c src/rotate.c src/reverse_rotate.c src/pushswap_utils.c src/radix.c src/min_hunting.c src/bucket.c src/bucket_utils.c src/hunter_seeker.c src/comp_sort.c
+SRCS   = src/main.c src/create.c src/update.c src/read.c src/delete.c src/ops.c src/rotate.c src/reverse.c src/sort_three.c src/turk.c src/turk_helpers.c src/find_insert.c src/validators.c
 OBJS   = $(SRCS:.c=.o)
 
 # Libft
