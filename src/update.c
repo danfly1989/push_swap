@@ -6,11 +6,10 @@
 /*   By: daflynn <daflynn@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 11:07:50 by daflynn           #+#    #+#             */
-/*   Updated: 2025/06/02 11:07:52 by daflynn          ###   ########.fr       */
+/*   Updated: 2025/06/04 12:56:40 by daflynn          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft/libft.h"
 #include "pushswap.h"
 
 void	ft_append_node(t_stack **stack, t_stack *new_node)
@@ -32,6 +31,7 @@ void	ft_append_node(t_stack **stack, t_stack *new_node)
 	new_node->next = NULL;
 }
 
+/*
 void	ft_prepend_node(t_stack **stack, t_stack *new_node)
 {
 	if (!new_node)
@@ -50,6 +50,7 @@ void	ft_prepend_node(t_stack **stack, t_stack *new_node)
 		*stack = new_node;
 	}
 }
+*/
 
 void	ft_push(t_stack **stack, t_stack *new_node)
 {

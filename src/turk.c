@@ -1,111 +1,175 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   turk.c                                             :+:      :+:    :+:   */
+/*   turk.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: daflynn <daflynn@student.42berlin.de>      +#+  +:+       +#+        */
+/*   By: daflynn <daflynn@student.42berlin.de>       +#+  +:+
+	+#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 10:18:39 by daflynn           #+#    #+#             */
-/*   Updated: 2025/06/03 20:13:57 by daflynn          ###   ########.fr       */
+/*   Updated: 2025/06/03 20:13:57 by daflynn         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pushswap.h"
 
-typedef struct s_var
+typedef struct s_vars
 {
-	int	target;
-	int	rot_a;
-	int	rot_b;
+	int	pos_a;
+	int	pos_b;
 	int	size_a;
 	int	size_b;
+	int	cost_a;
+	int	cost_b;
 
-}		t_var;
+}		t_vars;
 
-void	initial_push(t_stack **stack_a, t_stack **stack_b)
+// Calculate total cost to move element from B to A
+int	calculate_cost_b_to_a(t_stack *stack_a, t_stack *stack_b, int value)
 {
-	pb(stack_a, stack_b);
-	ft_printf("pb\n");
-	pb(stack_a, stack_b);
-	ft_printf("pb\n");
+	t_vars	var;
+
+	var.pos_b = get_index(stack_b, value);
+	var.pos_a = find_position_in_a(stack_a, value);
+	var.size_a = ft_stack_size(stack_a);
+	var.size_b = ft_stack_size(stack_b);
+	if (var.pos_a <= var.size_a / 2)
+		var.cost_a = var.pos_a;
+	else
+		var.cost_a = var.size_a - var.pos_a;
+	if (var.pos_b <= var.size_b / 2)
+		var.cost_b = var.pos_b;
+	else
+		var.cost_b = var.size_b - var.pos_b;
+	return (var.cost_a + var.cost_b);
 }
 
-void	push_until_three(t_stack **a, t_stack **b)
+int	find_cheapest_push_to_a(t_stack *stack_a, t_stack *stack_b)
 {
-	t_var	var;
-	int		index;
+	t_stack	*current;
+	int		cheapest;
+	int		min_cost;
+	int		current_cost;
 
-	while (ft_stack_size(*a) > 3)
+	current = stack_b;
+	cheapest = current->num;
+	min_cost = calculate_cost_b_to_a(stack_a, stack_b, current->num);
+	while (current)
 	{
-		var.size_a = ft_stack_size(*a);
-		var.size_b = ft_stack_size(*b);
-		var.target = find_cheapest_push_to_b(*a, *b);
-		var.rot_a = get_index(*a, var.target);
-		var.rot_b = find_insert_position(*b, var.target);
-		if (var.rot_a <= var.size_a / 2 && var.rot_b <= var.size_b / 2)
-			while (var.rot_a-- > 0 && var.rot_b-- > 0 && ft_printf("rr\n"))
-				rr(a, b);
-		else if (var.rot_a > var.size_a / 2 && var.rot_b > var.size_b / 2)
-			while (var.rot_a++ < var.size_a && var.rot_b++ < var.size_b
-				&& ft_printf("rrr\n"))
-				rrr(a, b);
-		rotate_to_top(a, var.rot_a);
-		index = find_insert_position(*b, var.target);
-		rotate_target_to_top(var.rot_b, var.size_b, b, index);
-		pb(a, b);
-		ft_printf("pb\n");
+		current_cost = calculate_cost_b_to_a(stack_a, stack_b, current->num);
+		if (current_cost < min_cost)
+		{
+			min_cost = current_cost;
+			cheapest = current->num;
+		}
+		current = current->next;
 	}
+	return (cheapest);
 }
 
 void	execute_cheapest_move(t_stack **stack_a, t_stack **stack_b)
 {
 	int	target;
-	int	rot_b;
+	int	pos_a;
+	int	pos_b;
+	int	size_a;
 	int	size_b;
-	int	rot_a;
 
-	target = find_cheapest_push_to_a(*stack_a, *stack_b);
-	if (target == -1)
+	if (ft_stack_size(*stack_b) == 0)
 		return ;
-	rot_b = get_index(*stack_b, target);
+	target = find_cheapest_push_to_a(*stack_a, *stack_b);
+	pos_b = get_index(*stack_b, target);
+	pos_a = find_position_in_a(*stack_a, target);
+	size_a = ft_stack_size(*stack_a);
 	size_b = ft_stack_size(*stack_b);
-	rotate_target_to_top(rot_b, size_b, stack_b, target);
-	rot_a = find_insert_position(*stack_a, target);
-	rotate_to_top(stack_a, rot_a);
+	if (pos_b <= size_b / 2)
+	{
+		while (pos_b-- > 0)
+		{
+			rb(stack_b);
+			ft_printf("rb\n");
+		}
+	}
+	else
+	{
+		while (pos_b++ < size_b)
+		{
+			rrb(stack_b);
+			ft_printf("rrb\n");
+		}
+	}
+	if (pos_a <= size_a / 2)
+	{
+		while (pos_a-- > 0)
+		{
+			ra(stack_a);
+			ft_printf("ra\n");
+		}
+	}
+	else
+	{
+		while (pos_a++ < size_a)
+		{
+			rra(stack_a);
+			ft_printf("rra\n");
+		}
+	}
 	pa(stack_a, stack_b);
 	ft_printf("pa\n");
 }
 
 void	final_align(t_stack **stack_a)
 {
-	int	min_index;
+	int	min_val;
+	int	min_pos;
 	int	size;
 
-	min_index = find_min_index(*stack_a);
+	if (ft_stack_size(*stack_a) <= 1)
+		return ;
+	min_val = find_min(*stack_a);
+	min_pos = get_index(*stack_a, min_val);
 	size = ft_stack_size(*stack_a);
-	if (min_index <= size / 2)
-		while (min_index-- > 0 && ft_printf("ra\n"))
+	if (min_pos <= size / 2)
+	{
+		while (min_pos-- > 0)
+		{
 			ra(stack_a);
+			ft_printf("ra\n");
+		}
+	}
 	else
-		while (min_index++ < size && ft_printf("rra\n"))
+	{
+		while (min_pos++ < size)
+		{
 			rra(stack_a);
+			ft_printf("rra\n");
+		}
+	}
 }
 
-/*Flow of mechanical turk:
-initial blind bush of 2 to b
-find the min number of rotations to push to b an d push above max in b
-continue until 3 remain in a
-call optimized sort for three
-once a is sorted, find the cheapest push back to a in sorted order
-rotate the minimum to the first place according to cheapest direction*/
 void	push_swap(t_stack **stack_a, t_stack **stack_b)
 {
+	if (!stack_a || !*stack_a || ft_stack_size(*stack_a) <= 1)
+		return ;
+	if (ft_is_sorted(*stack_a))
+		return ;
+	if (ft_stack_size(*stack_a) == 2)
+	{
+		if (!ft_is_sorted(*stack_a))
+		{
+			sa(stack_a);
+			ft_printf("sa\n");
+		}
+		return ;
+	}
+	if (ft_stack_size(*stack_a) == 3)
+	{
+		sort_three(stack_a);
+		return ;
+	}
 	initial_push(stack_a, stack_b);
 	push_until_three(stack_a, stack_b);
 	sort_three(stack_a);
-	if (ft_stack_size(*stack_a) == 2 && !ft_is_sorted(*stack_a)
-		&& ft_printf("sa\n"))
-		sa(stack_a);
 	while (ft_stack_size(*stack_b) > 0)
 		execute_cheapest_move(stack_a, stack_b);
 	final_align(stack_a);
