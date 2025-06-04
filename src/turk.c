@@ -24,6 +24,28 @@ typedef struct s_vars
 
 }		t_vars;
 
+void	push_until_three(t_stack **stack_a, t_stack **stack_b)
+{
+	int	target;
+	int	pos_a;
+	int	pos_b;
+	int	size_a;
+	int	size_b;
+
+	while (ft_stack_size(*stack_a) > 3)
+	{
+		size_a = ft_stack_size(*stack_a);
+		size_b = ft_stack_size(*stack_b);
+		target = find_cheapest_push_to_b(*stack_a, *stack_b);
+		pos_a = get_index(*stack_a, target);
+		pos_b = find_position_in_b(*stack_b, target);
+		adjust_stack_a(&pos_a, &size_a, stack_a);
+		adjust_stack_b(&pos_b, &size_b, stack_b);
+		pb(stack_a, stack_b);
+		ft_printf("pb\n");
+	}
+}
+
 // Calculate total cost to move element from B to A
 int	calculate_cost_b_to_a(t_stack *stack_a, t_stack *stack_b, int value)
 {
@@ -65,57 +87,6 @@ int	find_cheapest_push_to_a(t_stack *stack_a, t_stack *stack_b)
 		current = current->next;
 	}
 	return (cheapest);
-}
-
-void	execute_cheapest_move(t_stack **stack_a, t_stack **stack_b)
-{
-	int	target;
-	int	pos_a;
-	int	pos_b;
-	int	size_a;
-	int	size_b;
-
-	if (ft_stack_size(*stack_b) == 0)
-		return ;
-	target = find_cheapest_push_to_a(*stack_a, *stack_b);
-	pos_b = get_index(*stack_b, target);
-	pos_a = find_position_in_a(*stack_a, target);
-	size_a = ft_stack_size(*stack_a);
-	size_b = ft_stack_size(*stack_b);
-	if (pos_b <= size_b / 2)
-	{
-		while (pos_b-- > 0)
-		{
-			rb(stack_b);
-			ft_printf("rb\n");
-		}
-	}
-	else
-	{
-		while (pos_b++ < size_b)
-		{
-			rrb(stack_b);
-			ft_printf("rrb\n");
-		}
-	}
-	if (pos_a <= size_a / 2)
-	{
-		while (pos_a-- > 0)
-		{
-			ra(stack_a);
-			ft_printf("ra\n");
-		}
-	}
-	else
-	{
-		while (pos_a++ < size_a)
-		{
-			rra(stack_a);
-			ft_printf("rra\n");
-		}
-	}
-	pa(stack_a, stack_b);
-	ft_printf("pa\n");
 }
 
 void	final_align(t_stack **stack_a)

@@ -142,59 +142,26 @@ void	adjust_stack_a(int *pos_a, int *size_a, t_stack **stack_a)
 	}
 }
 
-void	push_until_three(t_stack **stack_a, t_stack **stack_b)
+void	adjust_stack_b(int *pos_b, int *size_b, t_stack **stack_b)
 {
-	int	target;
-	int	pos_a;
-	int	pos_b;
-	int	size_a;
-	int	size_b;
-
-	while (ft_stack_size(*stack_a) > 3)
+	if (*size_b > 0)
 	{
-		size_a = ft_stack_size(*stack_a);
-		size_b = ft_stack_size(*stack_b);
-		target = find_cheapest_push_to_b(*stack_a, *stack_b);
-		pos_a = get_index(*stack_a, target);
-		pos_b = find_position_in_b(*stack_b, target);
-		// if (pos_a <= size_a / 2)
-		// {
-		// 	while (pos_a-- > 0)
-		// 	{
-		// 		ra(stack_a);
-		// 		ft_printf("ra\n");
-		// 	}
-		// }
-		// else
-		// {
-		// 	while (pos_a++ < size_a)
-		// 	{
-		// 		rra(stack_a);
-		// 		ft_printf("rra\n");
-		// 	}
-		// }
-		adjust_stack_a(&pos_a, &size_a, stack_a);
-		if (size_b > 0)
+		if (*pos_b <= *size_b / 2)
 		{
-			if (pos_b <= size_b / 2)
+			while (*pos_b-- > 0)
 			{
-				while (pos_b-- > 0)
-				{
-					rb(stack_b);
-					ft_printf("rb\n");
-				}
-			}
-			else
-			{
-				while (pos_b++ < size_b)
-				{
-					rrb(stack_b);
-					ft_printf("rrb\n");
-				}
+				rb(stack_b);
+				ft_printf("rb\n");
 			}
 		}
-		pb(stack_a, stack_b);
-		ft_printf("pb\n");
+		else
+		{
+			while (*pos_b++ < *size_b)
+			{
+				rrb(stack_b);
+				ft_printf("rrb\n");
+			}
+		}
 	}
 }
 
