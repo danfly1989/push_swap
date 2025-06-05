@@ -12,7 +12,6 @@
 
 #include "pushswap.h"
 
-/*
 void	ft_print_stack(t_stack *stack)
 {
 	t_stack	*current;
@@ -29,7 +28,7 @@ void	ft_print_stack(t_stack *stack)
 		current = current->next;
 	}
 	ft_printf("\n");
-}*/
+}
 int	ft_stack_size(t_stack *stack)
 {
 	int	count;

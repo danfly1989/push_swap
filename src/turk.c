@@ -24,26 +24,27 @@ typedef struct s_vars
 
 }		t_vars;
 
-void	push_until_three(t_stack **stack_a, t_stack **stack_b)
+void	push_until_three(t_stack **a, t_stack **b)
 {
-	int	target;
+	int	value;
 	int	pos_a;
 	int	pos_b;
 	int	size_a;
 	int	size_b;
 
-	while (ft_stack_size(*stack_a) > 3)
+	while (ft_stack_size(*a) > 3)
 	{
-		size_a = ft_stack_size(*stack_a);
-		size_b = ft_stack_size(*stack_b);
-		target = find_cheapest_push_to_b(*stack_a, *stack_b);
-		pos_a = get_index(*stack_a, target);
-		pos_b = find_position_in_b(*stack_b, target);
-		adjust_stack_a(&pos_a, &size_a, stack_a);
-		adjust_stack_b(&pos_b, &size_b, stack_b);
-		pb(stack_a, stack_b);
+		value = find_cheapest_push_to_b(*a, *b);
+		pos_a = get_index(*a, value);
+		pos_b = find_position_in_b(*b, value);
+		size_a = ft_stack_size(*a);
+		size_b = ft_stack_size(*b);
+		adjust_stack_a(&pos_a, &size_a, a);
+		adjust_stack_b(&pos_b, &size_b, b);
+		pb(a, b);
 		ft_printf("pb\n");
 	}
+	sort_three(a);
 }
 
 // Calculate total cost to move element from B to A
@@ -144,4 +145,6 @@ void	push_swap(t_stack **stack_a, t_stack **stack_b)
 	while (ft_stack_size(*stack_b) > 0)
 		execute_cheapest_move(stack_a, stack_b);
 	final_align(stack_a);
+	ft_printf("FINAL STACK STATE:\n");
+	ft_print_stack(*stack_a);
 }

@@ -61,6 +61,7 @@ int	find_min(t_stack *stack)
 }
 
 // Find the best position in stack A to insert element from B
+// Find the best position in stack A to insert element from B
 int	find_position_in_a(t_stack *stack_a, int value)
 {
 	t_stack	*current;
@@ -72,10 +73,14 @@ int	find_position_in_a(t_stack *stack_a, int value)
 		return (0);
 	min_a = find_min(stack_a);
 	max_a = find_max(stack_a);
+	// If value is smaller than minimum, place it before minimum
 	if (value < min_a)
 		return (get_index(stack_a, min_a));
+	// If value is larger than maximum, place it before minimum
+	// (because stack is circular - largest goes before smallest)
 	if (value > max_a)
 		return (get_index(stack_a, min_a));
+	// Find position between two values in the sorted stack
 	current = stack_a;
 	position = 0;
 	while (current && current->next)
@@ -85,7 +90,8 @@ int	find_position_in_a(t_stack *stack_a, int value)
 		current = current->next;
 		position++;
 	}
-	if (stack_a->num > value && current->num < value)
+	// Handle wrap-around case: check if value fits between last and first
+	if (current && current->num < value && stack_a->num > value)
 		return (0);
 	return (0);
 }
