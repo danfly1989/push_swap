@@ -3,15 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   ops.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: daflynn <daflynn@student.42berlin.de>     +#+  +:+       +#+        */
+/*   By: daflynn <daflynn@student.42berlin.de>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/02 10:55:47 by daflynn           #+#    #+#             */
-/*   Updated: 2025/06/02 10:55:50 by daflynn         ###   ########.fr       */
+/*   Created: 2025/06/05 19:29:05 by daflynn           #+#    #+#             */
+/*   Updated: 2025/06/05 19:29:50 by daflynn          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pushswap.h"
 
+/*moves head of stack a to head of stack b
+essentially isolates the node by making the
+former head of stack b its next and delinks
+by assigning null to the prev pointer*/
 void	pb(t_stack **stack_a, t_stack **stack_b)
 {
 	t_stack	*node;

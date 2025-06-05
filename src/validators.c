@@ -29,11 +29,16 @@ static void	free_str_array(char **arr)
 /*checks overflow for is_valid_number*/
 static int	check_overflow(long num, int sign)
 {
-	if ((sign == 1 && num > INT_MAX) || (sign == -1 && num > -(long)INT_MIN))
+	if (sign == 1 && num > INT_MAX)
+		return (1);
+	if (sign == -1 && (unsigned long)num > (unsigned long)INT_MAX + 1)
 		return (1);
 	return (0);
 }
 
+/*uses the ft_is digit function with sign checks
+to check if str argument number is valid
+(positive or negative)*/
 int	is_valid_number(char *str)
 {
 	int		i;

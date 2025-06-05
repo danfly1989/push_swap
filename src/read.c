@@ -12,23 +12,24 @@
 
 #include "pushswap.h"
 
-void	ft_print_stack(t_stack *stack)
-{
-	t_stack	*current;
+// void	ft_print_stack(t_stack *stack)
+// {
+// 	t_stack	*current;
 
-	if (!stack)
-	{
-		ft_printf("Stack is empty\n");
-		return ;
-	}
-	current = stack;
-	while (current)
-	{
-		ft_printf("%d ", current->num);
-		current = current->next;
-	}
-	ft_printf("\n");
-}
+// 	if (!stack)
+// 	{
+// 		ft_printf("Stack is empty\n");
+// 		return ;
+// 	}
+// 	current = stack;
+// 	while (current)
+// 	{
+// 		ft_printf("%d ", current->num);
+// 		current = current->next;
+// 	}
+// 	ft_printf("\n");
+// }
+
 int	ft_stack_size(t_stack *stack)
 {
 	int	count;

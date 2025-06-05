@@ -32,7 +32,6 @@ void				ft_stack_clear(t_stack **stack);
 t_stack				*ft_create_node(int num);
 t_stack				*ft_fill_stack(char *arg);
 void				ft_print_stack(t_stack *stack);
-t_stack				*ft_pop(t_stack **stack);
 
 // stack updating functions (update.c)
 void				ft_push(t_stack **stack, t_stack *new_node);
@@ -67,7 +66,6 @@ int					ft_stack_size(t_stack *stack);
 int					ft_is_sorted(t_stack *stack);
 
 // turk funcs
-int					find_cheapest_push_to_a(t_stack *stack_a, t_stack *stack_b);
 int					is_valid_number(char *str);
 int					validate_input(int argc, char **argv);
 int					find_cheapest_push_to_b(t_stack *stack_a, t_stack *stack_b);
@@ -75,19 +73,17 @@ int					find_cheapest_push_to_b(t_stack *stack_a, t_stack *stack_b);
 // the turk helpers
 int					find_max(t_stack *stack);
 int					find_min(t_stack *stack);
-int					find_position_in_b(t_stack *stack_b, int value);
 int					find_position_in_a(t_stack *stack_a, int value);
 void				initial_push(t_stack **stack_a, t_stack **stack_b);
 
 // isolating push_until_three for clarity
 int					calculate_cost_a_to_b(t_stack *stack_a, t_stack *stack_b,
 						int value);
-int					find_cheapest_push_to_b(t_stack *stack_a, t_stack *stack_b);
 int					find_position_in_b(t_stack *stack_b, int value);
 void				adjust_stack_a(int *pos_a, int *size_a, t_stack **stack_a);
 void				adjust_stack_b(int *pos_b, int *size_b, t_stack **stack_b);
 
 // pushing back to a
-void				execute_cheapest_move(t_stack **stack_a, t_stack **stack_b);
+// void				execute_cheapest_move(t_stack **stack_a, t_stack **stack_b);
 
 #endif

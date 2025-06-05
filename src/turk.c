@@ -3,8 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   turk.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: daflynn <daflynn@student.42berlin.de>       +#+  +:+
-	+#+        */
+/*   By: daflynn <daflynn@student.42berlin.de>       +#+  +:+	+#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 10:18:39 by daflynn           #+#    #+#             */
 /*   Updated: 2025/06/03 20:13:57 by daflynn         ###   ########.fr       */
@@ -12,17 +11,6 @@
 /* ************************************************************************** */
 
 #include "pushswap.h"
-
-typedef struct s_vars
-{
-	int	pos_a;
-	int	pos_b;
-	int	size_a;
-	int	size_b;
-	int	cost_a;
-	int	cost_b;
-
-}		t_vars;
 
 void	push_until_three(t_stack **a, t_stack **b)
 {
@@ -40,54 +28,56 @@ void	push_until_three(t_stack **a, t_stack **b)
 		size_a = ft_stack_size(*a);
 		size_b = ft_stack_size(*b);
 		adjust_stack_a(&pos_a, &size_a, a);
-		adjust_stack_b(&pos_b, &size_b, b);
 		pb(a, b);
 		ft_printf("pb\n");
 	}
 	sort_three(a);
 }
 
-// Calculate total cost to move element from B to A
-int	calculate_cost_b_to_a(t_stack *stack_a, t_stack *stack_b, int value)
+// Rotate stack A to bring the target position to the top,
+// choosing the shortest direction.
+static void	rotate_a_to_position(t_stack **stack_a, int target_position)
 {
-	t_vars	var;
+	int	size_a;
 
-	var.pos_b = get_index(stack_b, value);
-	var.pos_a = find_position_in_a(stack_a, value);
-	var.size_a = ft_stack_size(stack_a);
-	var.size_b = ft_stack_size(stack_b);
-	if (var.pos_a <= var.size_a / 2)
-		var.cost_a = var.pos_a;
+	size_a = ft_stack_size(*stack_a);
+	if (target_position <= size_a / 2)
+	{
+		while (target_position > 0)
+		{
+			ra(stack_a);
+			ft_printf("ra\n");
+			target_position--;
+		}
+	}
 	else
-		var.cost_a = var.size_a - var.pos_a;
-	if (var.pos_b <= var.size_b / 2)
-		var.cost_b = var.pos_b;
-	else
-		var.cost_b = var.size_b - var.pos_b;
-	return (var.cost_a + var.cost_b);
+	{
+		while (target_position < size_a)
+		{
+			rra(stack_a);
+			ft_printf("rra\n");
+			target_position++;
+		}
+	}
 }
 
-int	find_cheapest_push_to_a(t_stack *stack_a, t_stack *stack_b)
+// Get the top value from stack B (no cost calculation needed)
+// Find where this value should go in stack A
+// Rotate stack A until the correct position is at the top
+// Choose the shorter rotation direction and push to A when it fits
+void	push_back_to_a(t_stack **stack_a, t_stack **stack_b)
 {
-	t_stack	*current;
-	int		cheapest;
-	int		min_cost;
-	int		current_cost;
+	int	target_value;
+	int	target_position;
 
-	current = stack_b;
-	cheapest = current->num;
-	min_cost = calculate_cost_b_to_a(stack_a, stack_b, current->num);
-	while (current)
+	while (ft_stack_size(*stack_b) > 0)
 	{
-		current_cost = calculate_cost_b_to_a(stack_a, stack_b, current->num);
-		if (current_cost < min_cost)
-		{
-			min_cost = current_cost;
-			cheapest = current->num;
-		}
-		current = current->next;
+		target_value = (*stack_b)->num;
+		target_position = find_position_in_a(*stack_a, target_value);
+		rotate_a_to_position(stack_a, target_position);
+		pa(stack_a, stack_b);
+		ft_printf("pa\n");
 	}
-	return (cheapest);
 }
 
 void	final_align(t_stack **stack_a)
@@ -142,9 +132,6 @@ void	push_swap(t_stack **stack_a, t_stack **stack_b)
 	initial_push(stack_a, stack_b);
 	push_until_three(stack_a, stack_b);
 	sort_three(stack_a);
-	while (ft_stack_size(*stack_b) > 0)
-		execute_cheapest_move(stack_a, stack_b);
+	push_back_to_a(stack_a, stack_b);
 	final_align(stack_a);
-	ft_printf("FINAL STACK STATE:\n");
-	ft_print_stack(*stack_a);
 }

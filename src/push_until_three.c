@@ -19,26 +19,40 @@ typedef struct s_vars
 	int	pos_b;
 	int	size_b;
 	int	size_a;
+	int	cost_a;
+	int	cost_b;
+	int	total_cost;
+
 }		t_vars;
 
+/*Calculate rotary distance to the top of each stack and add them together*/
 int	calculate_cost_a_to_b(t_stack *stack_a, t_stack *stack_b, int value)
 {
 	t_vars	var;
-	int		cost_a;
-	int		cost_b;
-	int		total_cost;
 
 	var.pos_a = get_index(stack_a, value);
 	var.pos_b = find_position_in_b(stack_b, value);
 	var.size_a = ft_stack_size(stack_a);
 	var.size_b = ft_stack_size(stack_b);
-	cost_a = (var.pos_a <= var.size_a / 2) ? var.pos_a : var.size_a - var.pos_a;
-	cost_b = (var.pos_b <= var.size_b / 2) ? var.pos_b : var.size_b - var.pos_b;
-	if ((var.pos_a <= var.size_a / 2) == (var.pos_b <= var.size_b / 2))
-		total_cost = (cost_a < cost_b ? cost_a : cost_b) + abs(cost_a - cost_b);
+	if (var.pos_a <= var.size_a / 2)
+		var.cost_a = var.pos_a;
 	else
-		total_cost = cost_a + cost_b;
-	return (total_cost);
+		var.cost_a = var.size_a - var.pos_a;
+	if (var.pos_b <= var.size_b / 2)
+		var.cost_b = var.pos_b;
+	else
+		var.cost_b = var.size_b - var.pos_b;
+	if ((var.pos_a <= var.size_a / 2) == (var.pos_b <= var.size_b / 2))
+	{
+		var.total_cost = var.cost_a + var.cost_b;
+		if (var.cost_a > var.cost_b)
+			var.total_cost -= var.cost_b;
+		else
+			var.total_cost -= var.cost_a;
+	}
+	else
+		var.total_cost = var.cost_a + var.cost_b;
+	return (var.total_cost);
 }
 
 int	find_cheapest_push_to_b(t_stack *stack_a, t_stack *stack_b)
@@ -64,38 +78,26 @@ int	find_cheapest_push_to_b(t_stack *stack_a, t_stack *stack_b)
 	return (cheapest);
 }
 
+/*rotate stack a in the most efficient direction
+ra if closer to start (middle inclusive)
+rra if closer to end*/
 void	adjust_stack_a(int *pos_a, int *size_a, t_stack **stack_a)
 {
 	if (*pos_a <= *size_a / 2)
+	{
 		while ((*pos_a)-- > 0)
 		{
 			ra(stack_a);
 			ft_printf("ra\n");
 		}
+	}
 	else
+	{
 		while ((*pos_a)++ < *size_a)
 		{
 			rra(stack_a);
 			ft_printf("rra\n");
 		}
-}
-
-void	adjust_stack_b(int *pos_b, int *size_b, t_stack **stack_b)
-{
-	if (*size_b > 0)
-	{
-		if (*pos_b <= *size_b / 2)
-			while ((*pos_b)-- > 0)
-			{
-				rb(stack_b);
-				ft_printf("rb\n");
-			}
-		else
-			while ((*pos_b)++ < *size_b)
-			{
-				rrb(stack_b);
-				ft_printf("rrb\n");
-			}
 	}
 }
 
@@ -113,7 +115,7 @@ int	find_position_in_b(t_stack *b, int value)
 	if (!b)
 		return (0);
 	if (value > max || value < find_min(b))
-		return (get_index(b, max) + 1); // insert after max (top becomes next)
+		return (get_index(b, max) + 1);
 	while (curr->next)
 	{
 		if (curr->num > value && curr->next->num < value)
@@ -122,9 +124,6 @@ int	find_position_in_b(t_stack *b, int value)
 		pos++;
 	}
 	if (curr->num > value && b->num < value)
-		return (0);    // wrap case
-	return (best_pos); // fallback
+		return (0);
+	return (best_pos);
 }
-
-// Main routine: push everything except 3 cheapest to B
-
